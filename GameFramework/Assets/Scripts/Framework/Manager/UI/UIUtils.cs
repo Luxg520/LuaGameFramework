@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+/// <summary>
+/// UI工具库
+/// </summary>
+public static class UIUtils
+{
+    /// <summary>
+    /// 添加UI到指定父节点下
+    /// </summary>
+    /// <param name="parent">父节点</param>
+    /// <param name="ui">uiPrefab</param>
+    public static void AddUIPrefab(Transform parent, Transform ui)
+    {
+        ui.SetParent(parent, false);
+    }
 
-public class UIUtils : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

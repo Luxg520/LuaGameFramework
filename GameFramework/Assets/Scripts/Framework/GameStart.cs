@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+/// <summary>
+/// 游戏启动器
+/// </summary>
+public class GameStart : MonoBehaviour
+{
 
-public class GameStart : MonoBehaviour {
+    public Transform ManagerRoot;
+    public Transform SceneRoot;
+    public Transform UIRoot;
+    public Transform CameraRoot;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    private void Start()
+    {
+
+    }
 }
