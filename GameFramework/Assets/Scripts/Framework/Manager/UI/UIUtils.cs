@@ -10,9 +10,9 @@ public static class UIUtils
     /// </summary>
     /// <param name="parent">父节点</param>
     /// <param name="ui">uiPrefab</param>
-    public static void AddUIPrefab(Transform parent, Transform ui)
+    public static void AddUIPrefab(Transform _parent, Transform _ui)
     {
-        ui.SetParent(parent, false);
+        _ui.SetParent(_parent, false);
     }
 
 }

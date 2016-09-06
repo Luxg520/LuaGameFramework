@@ -3,9 +3,9 @@ using System.Collections;
 
 public class LoginUI : UIBase
 {
-    public void ShowUI(int index)
+    public static void ShowUI(int index)
     {
-        ShowUI(UIType.LoginUI, UILayer.Game);
+        ShowUI(UIType.LoginUI, UILayer.Game, index);
     }
 
     public override void Init(params object[] _params)
@@ -14,6 +14,12 @@ public class LoginUI : UIBase
 
         int index = (int)_params[0];
 
+    }
+
+    // 登录
+    public void OnLogin()
+    {
+        
     }
 
 }

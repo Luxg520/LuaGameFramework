@@ -1,15 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+/// <summary>
+/// 资源管理器
+/// </summary>
+public class ResourceManager : ResourceLocal
+{
 
-public class ResourceManager : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

@@ -9,7 +9,18 @@ using System;
 /// </summary>
 public abstract class UIBase : MonoBehaviour
 {
+    #region 枚举
+
+    // UI显示隐藏动画
+    public enum UIAni
+    {
+        None,
+    }
+
+    #endregion
+
     #region 常用变量
+
     // UI信息
     private UIInfo UIInfo;
 
@@ -31,6 +42,7 @@ public abstract class UIBase : MonoBehaviour
         get { return UIInfo.style; }
     }
 
+    // UI层级
     public UILayer UILayer
     {
         get { return UIInfo.layer; }
@@ -107,10 +119,17 @@ public abstract class UIBase : MonoBehaviour
     /// <param name="_type">UI类型</param>
     /// <param name="_layer">UI显示层级</param>
     /// <param name="_params">相关参数</param>
-    public static void ShowUI(UIType _type, UILayer _layer, params object[] _params)
+    protected static void ShowUI(UIType _type, UILayer _layer, params object[] _params)
     {
         UIManager.ShowUI(_type, _layer, _params);
     }
+
+    #endregion
+
+    #region 动画相关
+
+    // UI动画
+    public UIAni UIAnimation;
 
     #endregion
 

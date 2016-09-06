@@ -1,15 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+/// <summary>
+/// 游戏核心
+/// </summary>
+public class GameCore
+{
+    private static GameCore instance;
+    public static GameCore Instance
+    {
+        get
+        {
+            if (instance == null)
+                instance = new GameCore();
+            return instance;
+        }
+    }
 
-public class GameCore : MonoBehaviour {
+    // 初始化
+    public void Init()
+    {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    }
+
 }

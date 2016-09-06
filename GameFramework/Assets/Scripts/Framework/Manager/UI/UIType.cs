@@ -29,6 +29,9 @@ public enum UILayer
     Test,   // 游戏测试层
 }
 
+/// <summary>
+/// UI信息
+/// </summary>
 public class UIInfo
 {
     public UIType type;     // UI类型

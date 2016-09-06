@@ -6,37 +6,8 @@ using System.Collections.Generic;
 /// <summary>
 /// UI管理器
 /// </summary>
-public class UIManager : Singleton<UIManager>
+public class UIManager : ManagerBase<UIManager>
 {
-    #region 公共成员
-
-    // 游戏主UI层
-    public Canvas GameUICanvas;
-    // 游戏前置UI层
-    public Canvas PreposeUICanvas;
-    // 游戏指引UI层
-    public Canvas GuideUICanvas;
-    // 游戏测试UI层
-    public Canvas TestUICanvas;
-
-    // 返回指定层级UICanvas
-    public Canvas GetUICanvas(UILayer _layer)
-    {
-        switch (_layer)
-        {
-            case UILayer.Game:
-                return GameUICanvas;
-            case UILayer.Prepose:
-                return PreposeUICanvas;
-            case UILayer.Guide:
-                return GuideUICanvas;
-            case UILayer.Test:
-                return TestUICanvas;
-        }
-        return null;
-    }
-    #endregion
-
     #region 静态成员
 
     // 所有已注册UI
@@ -61,7 +32,7 @@ public class UIManager : Singleton<UIManager>
         if (!m_LoadedUI.TryGetValue(_type, out uiInfo))
         {
             // 加载UI
-            uiInfo = Instance.LoadUI(_type, _layer);
+            uiInfo = Instance.LoadUI(_type);
         }
 
         uiInfo.layer = _layer;
@@ -139,21 +110,43 @@ public class UIManager : Singleton<UIManager>
 
     #endregion
 
-    #region UI资源管理
+    #region 公共成员
 
-    public UIInfo LoadUI(UIType _type, UILayer _layer)
+    // 游戏主UI层
+    public Canvas GameUICanvas;
+    // 游戏前置UI层
+    public Canvas PreposeUICanvas;
+    // 游戏指引UI层
+    public Canvas GuideUICanvas;
+    // 游戏测试UI层
+    public Canvas TestUICanvas;
+
+    // 返回指定层级UICanvas
+    public Canvas GetUICanvas(UILayer _layer)
     {
+        switch (_layer)
+        {
+            case UILayer.Game:
+                return GameUICanvas;
+            case UILayer.Prepose:
+                return PreposeUICanvas;
+            case UILayer.Guide:
+                return GuideUICanvas;
+            case UILayer.Test:
+                return TestUICanvas;
+        }
         return null;
-    }
-
-    public void ReleaseUI(UIType _type)
-    {
-
     }
 
     #endregion
 
     #region 内部函数
+
+    // 初始化
+    private void Start()
+    {        
+        InitUIs();
+    }
 
     // 初始化UI
     private void InitUIs()
@@ -175,6 +168,22 @@ public class UIManager : Singleton<UIManager>
         }
 
         m_UIDict.Add(_type, uiInfo);
+    }
+
+    // 加载UI
+    private UIInfo LoadUI(UIType _type)
+    {
+        UIInfo uiInfo = m_UIDict[_type];
+        string uiPath = ResourceConfig.GetUIPath(uiInfo.path);
+        GameObject go = ResourceManager.Instance.Instantiate(uiPath);
+        uiInfo.ui = go.GetComponent<UIBase>();
+        return uiInfo;
+    }
+
+    // 释放UI
+    private void ReleaseUI(UIType _type)
+    {
+
     }
 
     #endregion
