@@ -1,15 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
-
-public class SceneManager : MonoBehaviour {
-
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update () {
-	
-	}
+/// <summary>
+/// 场景管理器
+/// </summary>
+public class SceneManager : ManagerBase<SceneManager>
+{
+            
 }

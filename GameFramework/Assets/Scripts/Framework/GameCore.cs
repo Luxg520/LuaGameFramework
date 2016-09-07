@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Swift;
+
 /// <summary>
 /// 游戏核心
 /// </summary>
-public class GameCore
+public class GameCore : Core
 {
     private static GameCore instance;
     public static GameCore Instance
