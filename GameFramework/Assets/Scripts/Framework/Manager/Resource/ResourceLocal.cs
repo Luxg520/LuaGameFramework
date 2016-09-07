@@ -12,7 +12,7 @@ public class ResourceLocal : ManagerBase<ResourceLocal>
     /// <returns>GameObject</returns>
     public GameObject Instantiate(string path)
     {
-        GameObject go = (GameObject)Instantiate(LoadResource(path));        
+        GameObject go = (GameObject)Instantiate(Load(path));        
         go.EraseNameClone();
         return go;
     }
@@ -22,19 +22,19 @@ public class ResourceLocal : ManagerBase<ResourceLocal>
     /// </summary>
     /// <param name="path">资源路径</param>
     /// <returns></returns>
-    public UnityEngine.Object LoadResource(string path)
+    public UnityEngine.Object Load(string path)
     {
-        return LoadResourceInternal(path);
+        return LoadInternal(path);
     }
 
     /// <summary>
     /// 加载资源内部函数
     /// </summary>
     /// <param name="path">资源路径</param>
-    private UnityEngine.Object LoadResourceInternal(string path)
+    private UnityEngine.Object LoadInternal(string path)
     {
 #if UNITY_EDITOR
         return UnityEditor.AssetDatabase.LoadMainAssetAtPath(path);
 #endif
-    }
+    }    
 }

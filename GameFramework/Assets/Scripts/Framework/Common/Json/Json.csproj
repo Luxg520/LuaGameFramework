@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{53CDF0D3-C57B-41DF-9080-B9B09F8CEE8A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>JsonFx</RootNamespace>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <UseMSBuildEngine>False</UseMSBuildEngine>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\Outputs\Debug\Libraries\</OutputPath>
+    <DefineConstants>DEBUG;RACE;UNITY3D</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <AssemblyName>JsonFx.Json</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\Outputs\Release\Libraries\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <DefineConstants>TRACE;UNITY3D</DefineConstants>
+    <AssemblyName>JsonFx.Json</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Publish(Tencent)|x86' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Publish(Tencent)</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <AssemblyName>Json</AssemblyName>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Lab(Tencent)|x86' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\x86\Lab(Tencent)</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <AssemblyName>Json</AssemblyName>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="AOTSafe.cs" />
+    <Compile Include="JsonFx.Json\About.cs" />
+    <Compile Include="JsonFx.Json\DataReaderProvider.cs" />
+    <Compile Include="JsonFx.Json\DataWriterProvider.cs" />
+    <Compile Include="JsonFx.Json\EcmaScriptIdentifier.cs" />
+    <Compile Include="JsonFx.Json\EcmaScriptWriter.cs" />
+    <Compile Include="JsonFx.Json\IDataReader.cs" />
+    <Compile Include="JsonFx.Json\IDataWriter.cs" />
+    <Compile Include="JsonFx.Json\IJsonSerializable.cs" />
+    <Compile Include="JsonFx.Json\JsonDataReader.cs" />
+    <Compile Include="JsonFx.Json\JsonDataWriter.cs" />
+    <Compile Include="JsonFx.Json\JsonIgnoreAttribute.cs" />
+    <Compile Include="JsonFx.Json\JsonNameAttribute.cs" />
+    <Compile Include="JsonFx.Json\JsonReader.cs" />
+    <Compile Include="JsonFx.Json\JsonReaderSettings.cs" />
+    <Compile Include="JsonFx.Json\JsonSerializationException.cs" />
+    <Compile Include="JsonFx.Json\JsonSpecifiedPropertyAttribute.cs" />
+    <Compile Include="JsonFx.Json\JsonToken.cs" />
+    <Compile Include="JsonFx.Json\JsonWriter.cs" />
+    <Compile Include="JsonFx.Json\JsonWriterSettings.cs" />
+    <Compile Include="JsonFx.Json\TypeCoercionUtility.cs" />
+    <Compile Include="JsonFx.Json\XmlDataReader.cs" />
+    <Compile Include="JsonFx.Json\XmlDataWriter.cs" />
+  </ItemGroup>
+</Project>
