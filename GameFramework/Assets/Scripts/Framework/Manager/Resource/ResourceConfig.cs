@@ -5,8 +5,12 @@ using System.Collections;
 /// </summary>
 public class ResourceConfig
 {
+    // Assets路径
+    public const string AssetsPath = "Assets";
+    // AssetBundle存放路径
+    public static readonly string AssetBundlePath = Application.streamingAssetsPath + "/AssetBundles/";
     // 资源路径
-    public static readonly string ResourcePath = "Assets/Bundles/";
+    public static readonly string ResourcePath = AssetsPath + "/Bundles/";
     // UI资源路径
     public static readonly string UIPath = ResourcePath + "Prefabs/UI/";
 
