@@ -14,7 +14,7 @@ public class ResourceLocal : ManagerBase<ResourceLocal>
     /// <returns>GameObject</returns>
     public GameObject Instantiate(string path)
     {
-        GameObject go = Instantiate(Load(path));        
+        GameObject go = InstantiateGo(Load(path));        
         return go;
     }
 
@@ -23,7 +23,7 @@ public class ResourceLocal : ManagerBase<ResourceLocal>
     /// </summary>
     /// <param name="asset"></param>
     /// <returns></returns>
-    public GameObject Instantiate(UnityEngine.Object asset)
+    public GameObject InstantiateGo(UnityEngine.Object asset)
     {
         GameObject go = (GameObject)Instantiate(asset);        
         go.EraseNameClone();
