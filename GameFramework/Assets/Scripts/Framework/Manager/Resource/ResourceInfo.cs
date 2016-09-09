@@ -8,6 +8,8 @@ public class ResourceInfo
 {    
     public string path;    
     public AssetBundle assetBundle;
+    public AssetBundle[] dependsAB;
+
     public UnityEngine.Object mainObj;
     public UnityEngine.Object[] allObjs;
 

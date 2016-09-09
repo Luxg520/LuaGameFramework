@@ -15,7 +15,7 @@ public class GameStart : MonoBehaviour
         GameCore.Instance.Init();
 
         // 测试加载UI
-        LoginUI.ShowUI(1);
+        //LoginUI.ShowUI(1);
     }
 
     // 初始化

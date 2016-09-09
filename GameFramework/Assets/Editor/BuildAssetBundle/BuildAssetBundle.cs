@@ -8,12 +8,11 @@ using System.IO;
 /// </summary>
 public class BuildAssetBundle : Editor
 {
-    // 打包所有AssetBundle
-    [MenuItem("Tool/BuildAssetbundle/BuildAll")]
-    static void BuildAll()
-    {        
+    // 打包指定目录下所有资源AssetBundle
+    public static void DoBuildAll(string path)
+    {
         // 把Assets/Bundles目录下的所有文件都打成AssetBundle
-        List<string> all = Collect(ResourceConfig.ResourcePath, new string[] { "*.prefab", "*.jpg" });
+        List<string> all = Collect(path, new string[] { "*.prefab", "*.jpg" });
         for (int i = 0; i < all.Count; i++)
         {
             Debug.Log(all[i]);
@@ -21,21 +20,21 @@ public class BuildAssetBundle : Editor
         }
 
         // 如果该文件夹存在则删除
-        if (Directory.Exists(ResourceConfig.AssetBundlePath))
-            Directory.Delete(ResourceConfig.AssetBundlePath, true);
+        if (Directory.Exists(ResourceConfig.BuildPath))
+            Directory.Delete(ResourceConfig.BuildPath, true);
 
         // 重新创建一个新的，避免二次打包导致内容不一致
-        Directory.CreateDirectory(ResourceConfig.AssetBundlePath);
+        Directory.CreateDirectory(ResourceConfig.BuildPath);
 
         // 打包AssetBundle
-        BuildPipeline.BuildAssetBundles(ResourceConfig.AssetBundlePath, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows64);
+        BuildPipeline.BuildAssetBundles(ResourceConfig.BuildPath, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows);
 
         // 刷新一下
         AssetDatabase.Refresh();
     }
 
     // 设置Bundle名称
-    public static void SetAssetBundleName(string path)
+    private static void SetAssetBundleName(string path)
     {
         string[] dps = AssetDatabase.GetDependencies(path);
         Debug.Log(string.Format("There are {0} dependencies", dps.Length));
@@ -52,12 +51,13 @@ public class BuildAssetBundle : Editor
                 //abName = abName.Remove(abName.LastIndexOf("."));
                 Debug.Log(string.Format("{0}，AB名称：{1}", dps[i], abName));
                 ai.assetBundleName = abName;
+                ai.assetBundleVariant = "ab";
             }
         }
     }
 
     // 收集目录下所有指定扩展名的文件路径
-    public static List<string> Collect(string rootPath, string[] exs)
+    private static List<string> Collect(string rootPath, string[] exs)
     {
         List<string> allFiles = new List<string>();
 

@@ -28,4 +28,14 @@ public abstract class ManagerBase<T> : MonoBehaviour where T : ManagerBase<T>
 
     }
 
+    private void Start()
+    {
+        Init();
+    }
+
+    private void Destroy()
+    {
+        Release();
+    }
+
 }
