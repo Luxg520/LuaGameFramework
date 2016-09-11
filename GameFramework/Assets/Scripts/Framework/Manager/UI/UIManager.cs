@@ -50,35 +50,36 @@ public class UIManager : ManagerBase<UIManager>
         ui.Init(_params);
     }
 
-    /// <summary>
-    /// 隐藏UI界面
-    /// </summary>
-    /// <param name="_type">UI类型</param>
-    /// <param name="_params">所需参数</param>
-    /// <returns></returns>
+    // 隐藏UI界面
     public static UIBase HideUI(UIType _type, params object[] _params)
     {
         return null;
     }
 
-    /// <summary>
-    /// 卸载UI界面
-    /// </summary>
-    /// <param name="_type">UI类型</param>
-    /// <param name="_params">卸载所需参数</param>
-    public static void ReleaseUI(UIType _type, params object[] _params)
+    // 卸载UI界面
+    public static void ReleaseUI(UIType _type)
     {
+        // UI 是否已注册
+        if (!m_UIDict.ContainsKey(_type))
+            throw new Exception("ui has not register!");
 
+        if (m_LoadedUI.ContainsKey(_type))
+        {
+            UIInfo uiInfo = m_LoadedUI[_type];
+            string uiPath = ResourceConfig.GetUIPath(uiInfo.path);
+            ResourceManager.Instance.UnLoadAll(uiPath);
+            m_LoadedUI.Remove(_type);
+        }
     }
 
     // 获取UI实例
     public static T GetUI<T>() where T : class
     {
-        foreach (var ui in m_UIDict.Values)
+        foreach (var uiInfo in m_UIDict.Values)
         {
-            if (ui is T)
+            if (uiInfo.ui is T)
             {
-                return ui as T;
+                return uiInfo.ui as T;
             }
         }
         return null;
@@ -144,7 +145,7 @@ public class UIManager : ManagerBase<UIManager>
     #region 内部函数
 
     // 初始化
-    protected override void Init()
+    public override void Init()
     {
         base.Init();
         InitUIs();
@@ -175,13 +176,22 @@ public class UIManager : ManagerBase<UIManager>
     // 加载UI
     private void LoadUI(UIType _type, Action<UIInfo> cb)
     {
+        // 加载UI资源并实例化GameObject
         UIInfo uiInfo = m_UIDict[_type];
-        string uiPath = "5d4fdb67af4ec7544b412c2036a87da7.ab";//ResourceConfig.GetUIPath(uiInfo.path);
+        string uiPath = ResourceConfig.GetUIPath(uiInfo.path);
         UnityEngine.Object obj = ResourceManager.Instance.Load(uiPath);
         GameObject go = (GameObject)Instantiate(obj);
         uiInfo.ui = go.GetComponent<UIBase>();
+        uiInfo.ui.UIInfo = uiInfo;
+                        
+        // 缓存界面
+        m_LoadedUI.Add(_type, uiInfo);
+
+        // 回调
         if (cb != null)
             cb(uiInfo);
+
+        // 异步方法（未完善暂时不用）
         //   .LoadAsync(uiPath, (obj) =>
         //{
         //    GameObject go = (GameObject)Instantiate(obj);
@@ -189,12 +199,6 @@ public class UIManager : ManagerBase<UIManager>
         //    if (cb != null)
         //        cb(uiInfo);
         //});
-    }
-
-    // 释放UI
-    private void ReleaseUI(UIType _type)
-    {
-
     }
 
     #endregion

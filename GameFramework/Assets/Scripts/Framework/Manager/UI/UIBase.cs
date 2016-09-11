@@ -9,20 +9,11 @@ using System;
 /// </summary>
 public abstract class UIBase : MonoBehaviour
 {
-    #region 枚举
-
-    // UI显示隐藏动画
-    public enum UIAni
-    {
-        None,
-    }
-
-    #endregion
 
     #region 常用变量
 
-    // UI信息
-    private UIInfo UIInfo;
+    // UI信息    
+    public UIInfo UIInfo;    
 
     // UI类型
     public UIType UIType
@@ -46,6 +37,16 @@ public abstract class UIBase : MonoBehaviour
     public UILayer UILayer
     {
         get { return UIInfo.layer; }
+    }
+
+    // UI动画
+    public UIAni UIAnimation;
+
+    // UI状态
+    private UIState m_UIState = UIState.None;
+    public UIState UIState
+    {
+        get { return m_UIState; }
     }
 
     private GameObject m_MyGo = null;
@@ -124,16 +125,27 @@ public abstract class UIBase : MonoBehaviour
         UIManager.ShowUI(_type, _layer, _params);
     }
 
+    // 获取UI实例
+    public static T GetInstance<T>() where T : UIBase
+    {
+        return UIManager.GetUI<T>();
+    }
+
+    // 切换UI状态
+    public void ChangeState(UIState _state)
+    {
+        m_UIState = _state;
+    }
+
+    // 卸载该界面
+    public void Release()
+    {
+        UIManager.ReleaseUI(this.UIType);
+    }
+
     #endregion
 
-    #region 动画相关
-
-    // UI动画
-    public UIAni UIAnimation;
-
-    #endregion
-
-    #region 可重载函数
+    #region 公共基本函数
     /// <summary>
     /// 界面初始化阶段（主要用于逻辑处理）
     /// 每次开启界面都会调用一次
@@ -157,14 +169,22 @@ public abstract class UIBase : MonoBehaviour
     /// 每帧执行函数
     /// 尽量不用，非必要时才用
     /// </summary>
-    protected virtual void OnUpdate()
+    protected virtual void OnUpdate(float _deltaTime)
+    {
+
+    }
+
+    /// <summary>
+    /// 当界面被卸载时
+    /// </summary>
+    protected virtual void OnRelease()
     {
 
     }
 
     #endregion
 
-    #region 内部函数
+    #region 内部基本函数
 
     /// <summary>
     /// 暂时没什么用，屏蔽掉不让用
@@ -185,6 +205,47 @@ public abstract class UIBase : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        OnUpdate(Time.deltaTime);
+    }
+
+    /// <summary>
+    /// 当界面被销毁时
+    /// </summary>
+    private void OnDestroy()
+    {
+
+    }
+
+    #endregion
+
+    #region 音乐
+
+    /// <summary>
+    /// 当播放音乐时
+    /// </summary>
+    protected virtual void OnPlayAudio()
+    {
+    }
+
+    /// <summary>
+    /// 关闭音乐时
+    /// </summary>
+    protected virtual void OnCloseAudio()
+    {
+    }
+
+    #endregion
+
+    #region 动画
+
+    public virtual void OnShowAni()
+    {
+
+    }
+
+    public virtual void OnHideAni()
+    {
+
     }
 
     #endregion

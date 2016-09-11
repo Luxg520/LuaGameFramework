@@ -40,3 +40,20 @@ public class UIInfo
     public string path;     // UI路径
     public UIBase ui;       // UI基层实例
 }
+
+// UI显示隐藏动画
+public enum UIAni
+{
+    None,
+}
+
+// UI状态
+public enum UIState
+{
+    None,
+    Initial,
+    Loading,
+    Ready,
+    Disabled,
+    Closing
+}

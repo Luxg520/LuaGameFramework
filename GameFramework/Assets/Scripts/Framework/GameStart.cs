@@ -10,37 +10,34 @@ public class GameStart : MonoBehaviour
     //private Dictionary<string, MonoBehaviour> ManagerDict = new Dictionary<string, MonoBehaviour>();
 
     private void Start()
-    {
-        //InitManager();
+    {        
+        InitManager();
+
         GameCore.Instance.Init();
 
         // 测试加载UI
-        //LoginUI.ShowUI(1);
+        LoginUI.ShowUI(1);
     }
 
-    // 初始化
-    private void Init()
+    // 初始化管理器
+    private void InitManager()
     {
-        // 可用于做一些启动相关的初始化工作
+        ResourceManager.Instance.Init();
 
-        
+        UIManager.Instance.Init();
+
+        // 资源管理器
+        //AddManager<ResourceManager>("ResourceManager");
+
+        //// 协程管理器
+        //AddManager<CoroutineManager>("CoroutineManager");
+
+        //// 音乐管理器
+        //AddManager<AudioManager>("AudioManager");
+
+        //// UI管理器
+        //AddManager<UIManager>("UIManager");
     }
-
-    //// 初始化管理器
-    //private void InitManager()
-    //{
-    //    // 资源管理器
-    //    AddManager<ResourceManager>("ResourceManager");
-
-    //    // 协程管理器
-    //    AddManager<CoroutineManager>("CoroutineManager");
-
-    //    // 音乐管理器
-    //    AddManager<AudioManager>("AudioManager");
-
-    //    // UI管理器
-    //    AddManager<UIManager>("UIManager");
-    //}    
 
     //// 添加一个管理器
     //private T AddManager<T>(string name) where T : MonoBehaviour

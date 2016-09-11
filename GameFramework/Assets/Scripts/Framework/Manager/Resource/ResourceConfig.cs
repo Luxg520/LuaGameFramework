@@ -7,21 +7,42 @@ public class ResourceConfig
 {
     // Assets路径
     public const string AssetsPath = "Assets";
-    //// AssetBundle存放路径
-    //public static readonly string AssetBundlePath = Application.streamingAssetsPath + "/AssetBundles/";
     // 资源路径
     public static readonly string ResourcePath = AssetsPath + "/Bundles/";
     // UI资源路径
     public static readonly string UIPath = ResourcePath + "Prefabs/UI/";
+
+
+    #region AssetBundle相关
+
+    // AssetBundle 文件路径
+    public static string ABPath
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return BuildPath;
+#endif
+        }
+    }
+
+    // AssetBundle Manifest 文件路径
+    public static string ABManifestPath
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return ABPath + "AssetBundle";
+#endif
+        }
+    }
 
     // AssetBundle 文件路径
     public static string ABUrl
     {
         get
         {
-#if UNITY_EDITOR
-            return "file://" + BuildPath;
-#endif
+            return "file://" + ABPath;
         }
     }
 
@@ -30,18 +51,18 @@ public class ResourceConfig
     {
         get
         {
-#if UNITY_EDITOR
-            return ABUrl + "AssetBundle";
-#endif
+            return "file://" + ABManifestPath;
         }
     }
 
-
-    // 获取指定UI路径
+    // 获取指定UI的AB_Name
     public static string GetUIPath(string path)
     {
-        return UIPath + path + ".prefab";
+        // AssetBundle名称均为小写
+        return (UIPath + path).ToLower();
     }
+
+    #endregion
 
 
     #region 打包相关路径

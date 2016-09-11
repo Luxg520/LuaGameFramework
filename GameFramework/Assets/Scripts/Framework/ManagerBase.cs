@@ -18,24 +18,13 @@ public abstract class ManagerBase<T> : MonoBehaviour where T : ManagerBase<T>
         }
     }
 
-    protected virtual void Init()
+    public virtual void Init()
     {
 
     }
 
-    protected virtual void Release()
+    public virtual void Release()
     {
 
     }
-
-    private void Start()
-    {
-        Init();
-    }
-
-    private void Destroy()
-    {
-        Release();
-    }
-
 }

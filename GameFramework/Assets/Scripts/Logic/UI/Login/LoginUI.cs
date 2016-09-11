@@ -19,7 +19,8 @@ public class LoginUI : UIBase
     // 登录
     public void OnLogin()
     {
-        
+        Destroy(this.gameObject);
+        Release();
     }
 
 }

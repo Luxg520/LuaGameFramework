@@ -11,7 +11,7 @@ public class BuildAssetBundle : Editor
     // 打包指定目录下所有资源AssetBundle
     public static void DoBuildAll(string path)
     {
-        // 把Assets/Bundles目录下的所有文件都打成AssetBundle
+        // 把Assets/Bundles目录下的所有指定类型文件都打成AssetBundle
         List<string> all = Collect(path, new string[] { "*.prefab", "*.jpg" });
         for (int i = 0; i < all.Count; i++)
         {
@@ -20,12 +20,17 @@ public class BuildAssetBundle : Editor
         }
 
         // 如果该文件夹存在则删除
-        if (Directory.Exists(ResourceConfig.BuildPath))
-            Directory.Delete(ResourceConfig.BuildPath, true);
+        //if (Directory.Exists(ResourceConfig.BuildPath))
+        //    Directory.Delete(ResourceConfig.BuildPath, true); 
 
-        // 重新创建一个新的，避免二次打包导致内容不一致
-        Directory.CreateDirectory(ResourceConfig.BuildPath);
+        //// 重新创建一个新的，避免二次打包导致内容不一致
+        //Directory.CreateDirectory(ResourceConfig.BuildPath);
 
+        // 不存在此文件夹的时候创建一下
+        if (!Directory.Exists(ResourceConfig.BuildPath))
+            Directory.CreateDirectory(ResourceConfig.BuildPath);
+
+        // （新版的打包工具会帮我们自动处理有变化的Bundle，没变化不会重新打包，加快的打包的时间）
         // 打包AssetBundle
         BuildPipeline.BuildAssetBundles(ResourceConfig.BuildPath, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows);
 
@@ -45,13 +50,12 @@ public class BuildAssetBundle : Editor
             AssetImporter ai = AssetImporter.GetAtPath(dps[i]);
             if (ai.assetBundleName != null)
             {
-                string abName = AssetDatabase.AssetPathToGUID(dps[i]);
+                string abName = path.Remove(path.LastIndexOf("."));//AssetDatabase.AssetPathToGUID(dps[i]);
                 //string abName = dps[i].Replace(ResourceConfig.ResourcePath, "ab-");
                 //abName = abName.Replace("/", "-");
-                //abName = abName.Remove(abName.LastIndexOf("."));
                 Debug.Log(string.Format("{0}，AB名称：{1}", dps[i], abName));
                 ai.assetBundleName = abName;
-                ai.assetBundleVariant = "ab";
+                ai.assetBundleVariant = null;
             }
         }
     }
