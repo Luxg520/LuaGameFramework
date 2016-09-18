@@ -8,97 +8,10 @@ using System.Collections.Generic;
 /// </summary>
 public class ResourceBundle : ManagerBase<ResourceBundle>
 {
+    #region 资源管理内部函数
+
     // 已加载资源缓存
     private Dictionary<string, ResourceInfo> loadedResources = new Dictionary<string, ResourceInfo>();
-
-    #region 加载
-
-    // 同步加载并实例化Object
-    public GameObject Instantiate(string path)
-    {
-        GameObject go = InstantiateGo(Load(path));
-        return go;
-    }
-
-    // 实例化 Object
-    public GameObject InstantiateGo(UnityEngine.Object asset)
-    {
-        GameObject go = (GameObject)InstantiateGo(asset);
-        go.EraseNameClone();
-        return go;
-    }
-
-    // 同步加载资源
-    public UnityEngine.Object Load(string path)
-    {
-        return LoadInternal(path);
-    }
-
-    // 异步加载资源
-    public void LoadAsync(string path, Action<UnityEngine.Object> cb)
-    {
-        StartCoroutine(LoadAsyncInternal(path, cb));
-    }
-
-    // 协程加载资源
-    public void LoadCoroutine(string path, Action<UnityEngine.Object> cb)
-    {
-        StartCoroutine(LoadCoroutineInternal(path, cb));
-    }
-
-    #endregion
-
-    #region 卸载
-
-    // 安全卸载资源
-    public void SafeUnLoad(string assetBundleName)
-    {
-        ResourceInfo res = GetResource(assetBundleName);
-
-        // 是否正在引用该资源
-        if (res.Used)
-            return;
-
-        // 遍历卸载所有依赖资源
-        for (int i = 0; i < res.depends.Count; i++)
-        {
-            SafeUnLoad(res.depends[i].assetBundleName);
-        }
-
-        // 卸载主体
-        DestroyImmediate(res.mainObj, true);
-        res.mainObj = null;
-        res.assetBundle.Unload(false);
-        res.assetBundle = null;
-        loadedResources.Remove(assetBundleName);
-
-        Debug.Log("卸载成功:" + assetBundleName);
-    }
-
-    // 卸载该资源及全部引用
-    public void UnLoadAll(string assetBundleName)
-    {
-        ResourceInfo res = GetResource(assetBundleName);
-
-        // 遍历卸载所有依赖资源
-        for (int i = 0; i < res.depends.Count; i++)
-        {
-            SafeUnLoad(res.depends[i].assetBundleName);
-        }
-
-        // 卸载主体
-        DestroyImmediate(res.mainObj, true);
-        res.mainObj = null;
-        res.assetBundle.Unload(true);
-        res.assetBundle = null;
-        loadedResources.Remove(assetBundleName);
-
-        Debug.Log("卸载成功:" + assetBundleName);
-    }
-
-    #endregion
-
-    #region 资源管理内部函数
 
     // AB总依赖文件
     AssetBundleManifest abMainfest;
@@ -113,7 +26,7 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
 
         // 创建常驻资源
         CreateResidentResources();
-        
+
     }
 
     // 初始化所有依赖关系
@@ -156,6 +69,35 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
     //    }
     //}
 
+    #endregion
+
+    #region 实例化
+
+    // 同步加载并实例化Object
+    public GameObject Instantiate(string path)
+    {
+        GameObject go = InstantiateGo(Load(path));
+        return go;
+    }
+
+    // 实例化 Object
+    public GameObject InstantiateGo(UnityEngine.Object asset)
+    {
+        GameObject go = (GameObject)InstantiateGo(asset);
+        go.EraseNameClone();
+        return go;
+    }
+
+    #endregion
+
+    #region 同步加载
+
+    // 同步加载资源
+    public UnityEngine.Object Load(string path)
+    {
+        return LoadInternal(path);
+    }
+
     // 获取一个资源对象
     private ResourceInfo GetResource(string assetBundleName)
     {
@@ -163,6 +105,7 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
         loadedResources.TryGetValue(assetBundleName, out mainRes);
         return mainRes;
     }
+
     // 加载一个资源对象
     private ResourceInfo LoadResource(string assetBundleName)
     {
@@ -228,6 +171,47 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
         return mainRes.mainObj;
     }
 
+    #endregion
+
+    #region 异步加载
+
+    // 异步加载资源
+    public void LoadAsync(string path, Action<UnityEngine.Object> cb)
+    {
+        StartCoroutine(LoadAsyncInternal(path, cb));
+    }
+
+    // 异步加载一个资源对象
+    private void LoadResourceAsync(string assetBundleName, Action<ResourceInfo> cb)
+    {
+        ResourceInfo mainRes = GetResource(assetBundleName);
+        // 该资源是否已加载
+        if (mainRes == null)
+        {
+            // 创建资源
+            CreateResourceAsync(assetBundleName, cb);
+        }
+    }
+
+    // 异步创建一个资源对象
+    private void CreateResourceAsync(string assetBundleName, Action<ResourceInfo> cb)
+    {
+        ResourceInfo mainRes = new ResourceInfo();
+        // 加载该AssetBundle所有依赖的资源
+        string[] dps = abMainfest.GetAllDependencies(assetBundleName);
+        for (int i = 0; i < dps.Length; i++)
+        {
+            ResourceInfo dpRes = LoadResource(dps[i]);
+            mainRes.depends.Add(dpRes);
+        }
+        // 从磁盘上加载主体AssetBundle到内存
+        string path = ResourceConfig.ABPath + assetBundleName;
+        mainRes.assetBundle = AssetBundle.LoadFromFile(path);
+        mainRes.assetBundleName = assetBundleName;
+        // 缓存下来
+        loadedResources.Add(assetBundleName, mainRes);
+    }
+
     // 异步加载资源内部
     private IEnumerator LoadAsyncInternal(string assetBundleName, Action<UnityEngine.Object> cb)
     {
@@ -239,29 +223,34 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
             yield break;
         }
 
-        WWW www;
         // 加载该AssetBundle所有依赖的资源
+        WWW www;
         string[] dps = abMainfest.GetAllDependencies(assetBundleName);
-        AssetBundle[] abs = new AssetBundle[dps.Length];
-        for (int i = 0; i < dps.Length; i++)
+        foreach (string dp in dps)
         {
-            string url = ResourceConfig.ABUrl + dps[i];
-            www = WWW.LoadFromCacheOrDownload(url, abMainfest.GetAssetBundleHash(dps[i]));
-            yield return www;
-            abs[i] = www.assetBundle;
+            string dpUrl = ResourceConfig.ABUrl + dp;
+            WWW dpwww = new WWW(dpUrl);
+            yield return dpwww;
+            if (dpwww.error != null)
+            {
+                Debug.Log(dpwww.error);
+                yield break;
+            }
+
         }
 
         // 加载主体
-        www = WWW.LoadFromCacheOrDownload(ResourceConfig.ABUrl + assetBundleName, abMainfest.GetAssetBundleHash(assetBundleName), 0);
+        string mainUrl = ResourceConfig.ABUrl + assetBundleName;
+        www = new WWW(mainUrl);
         yield return www;
         if (www.error != null)
         {
             Debug.LogError(www.error);
             yield break;
-        }       
+        }
 
         AssetBundle ab = www.assetBundle;
-        UnityEngine.Object obj = ab.LoadAsset("LoginUI");            
+        UnityEngine.Object obj = ab.LoadAsset("LoginUI");
 
         ResourceInfo resInfo = new ResourceInfo();
         resInfo.assetBundleName = assetBundleName;
@@ -296,6 +285,16 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
 
     }
 
+    #endregion
+
+    #region 协程加载
+
+    // 协程加载资源
+    public void LoadCoroutine(string path, Action<UnityEngine.Object> cb)
+    {
+        StartCoroutine(LoadCoroutineInternal(path, cb));
+    }
+
     // 协程加载资源内部
     private IEnumerator LoadCoroutineInternal(string path, Action<UnityEngine.Object> cb)
     {
@@ -305,4 +304,55 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
     }
 
     #endregion
+
+    #region 卸载
+
+    // 安全卸载资源
+    public void SafeUnLoad(string assetBundleName)
+    {
+        ResourceInfo res = GetResource(assetBundleName);
+
+        // 是否正在引用该资源
+        if (res.Used)
+            return;
+
+        // 遍历卸载所有依赖资源
+        for (int i = 0; i < res.depends.Count; i++)
+        {
+            SafeUnLoad(res.depends[i].assetBundleName);
+        }
+
+        // 卸载主体
+        DestroyImmediate(res.mainObj, true);
+        res.mainObj = null;
+        res.assetBundle.Unload(false);
+        res.assetBundle = null;
+        loadedResources.Remove(assetBundleName);
+
+        Debug.Log("卸载成功:" + assetBundleName);
+    }
+
+    // 卸载该资源及全部引用
+    public void UnLoadAll(string assetBundleName)
+    {
+        ResourceInfo res = GetResource(assetBundleName);
+
+        // 遍历卸载所有依赖资源
+        for (int i = 0; i < res.depends.Count; i++)
+        {
+            SafeUnLoad(res.depends[i].assetBundleName);
+        }
+
+        // 卸载主体
+        DestroyImmediate(res.mainObj, true);
+        res.mainObj = null;
+        res.assetBundle.Unload(true);
+        res.assetBundle = null;
+        loadedResources.Remove(assetBundleName);
+
+        Debug.Log("卸载成功:" + assetBundleName);
+    }
+
+    #endregion
+
 }
