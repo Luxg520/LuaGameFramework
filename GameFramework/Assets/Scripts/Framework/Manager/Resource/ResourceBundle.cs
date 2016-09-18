@@ -8,7 +8,7 @@ using System.Collections.Generic;
 /// </summary>
 public class ResourceBundle : ManagerBase<ResourceBundle>
 {
-    #region 资源管理内部函数
+    #region 资源管理
 
     // 已加载资源缓存
     private Dictionary<string, ResourceInfo> loadedResources = new Dictionary<string, ResourceInfo>();
@@ -42,6 +42,12 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
     private void CreateResidentResources()
     {
         Debug.Log("创建常驻资源");
+    }
+
+    // 获取Asset资源名字
+    private string GetAssetName(string assetBundleName)
+    {
+        return assetBundleName.Substring(assetBundleName.LastIndexOf("/") + 1);
     }
 
     // 加载依赖关系文件
@@ -149,7 +155,7 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
         if (!mainRes.Used)
         {
             // 获取真实的asset名称
-            string assetName = assetBundleName.Substring(assetBundleName.LastIndexOf("/") + 1);
+            string assetName = GetAssetName(assetBundleName);
             // 加载asset镜像到内存
             mainRes.mainObj = mainRes.assetBundle.LoadAsset(assetName);
         }
@@ -182,87 +188,134 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
     }
 
     // 异步加载一个资源对象
-    private void LoadResourceAsync(string assetBundleName, Action<ResourceInfo> cb)
+    private IEnumerator LoadResourceAsync(string assetBundleName, Action<ResourceInfo> cb)
     {
         ResourceInfo mainRes = GetResource(assetBundleName);
         // 该资源是否已加载
         if (mainRes == null)
         {
             // 创建资源
-            CreateResourceAsync(assetBundleName, cb);
+            yield return StartCoroutine(CreateResourceAsync(assetBundleName));
+            mainRes = GetResource(assetBundleName);
         }
+        // 返回该资源
+        if (cb != null)
+            cb(mainRes);
     }
 
     // 异步创建一个资源对象
-    private void CreateResourceAsync(string assetBundleName, Action<ResourceInfo> cb)
+    private IEnumerator CreateResourceAsync(string assetBundleName)
     {
-        ResourceInfo mainRes = new ResourceInfo();
+        List<ResourceInfo> depends = new List<ResourceInfo>();
         // 加载该AssetBundle所有依赖的资源
         string[] dps = abMainfest.GetAllDependencies(assetBundleName);
-        for (int i = 0; i < dps.Length; i++)
+        foreach(string dp in dps)
         {
-            ResourceInfo dpRes = LoadResource(dps[i]);
-            mainRes.depends.Add(dpRes);
-        }
-        // 从磁盘上加载主体AssetBundle到内存
-        string path = ResourceConfig.ABPath + assetBundleName;
-        mainRes.assetBundle = AssetBundle.LoadFromFile(path);
-        mainRes.assetBundleName = assetBundleName;
-        // 缓存下来
-        loadedResources.Add(assetBundleName, mainRes);
-    }
-
-    // 异步加载资源内部
-    private IEnumerator LoadAsyncInternal(string assetBundleName, Action<UnityEngine.Object> cb)
-    {
-        // 是否在缓存中
-        if (loadedResources.ContainsKey(assetBundleName))
-        {
-            if (cb != null)
-                cb(loadedResources[assetBundleName].mainObj);
-            yield break;
-        }
-
-        // 加载该AssetBundle所有依赖的资源
-        WWW www;
-        string[] dps = abMainfest.GetAllDependencies(assetBundleName);
-        foreach (string dp in dps)
-        {
-            string dpUrl = ResourceConfig.ABUrl + dp;
-            WWW dpwww = new WWW(dpUrl);
-            yield return dpwww;
-            if (dpwww.error != null)
+            yield return StartCoroutine(LoadResourceAsync(dp, (dpRes) =>
             {
-                Debug.Log(dpwww.error);
-                yield break;
-            }
-
+                depends.Add(dpRes);
+            }));
         }
 
-        // 加载主体
-        string mainUrl = ResourceConfig.ABUrl + assetBundleName;
-        www = new WWW(mainUrl);
+        // 从磁盘上加载主体AssetBundle到内存
+        string mainUrl = ResourceConfig.ABPath + assetBundleName;
+        WWW www = new WWW(mainUrl);
         yield return www;
-        if (www.error != null)
+        if (www.error == null)
         {
             Debug.LogError(www.error);
             yield break;
         }
 
-        AssetBundle ab = www.assetBundle;
-        UnityEngine.Object obj = ab.LoadAsset("LoginUI");
+        ResourceInfo mainRes = new ResourceInfo();
+        mainRes.assetBundleName = assetBundleName;
+        mainRes.assetBundle = www.assetBundle;
+        mainRes.depends = depends;
 
-        ResourceInfo resInfo = new ResourceInfo();
-        resInfo.assetBundleName = assetBundleName;
-        //resInfo.dependsAB = abs;
-        resInfo.assetBundle = www.assetBundle;
-        resInfo.mainObj = obj;
+        // 缓存下来
+        loadedResources.Add(assetBundleName, mainRes);
+    }
 
-        // 加入缓存
-        loadedResources.Add(assetBundleName, resInfo);
+    // 异步加载Asset
+    private IEnumerator LoadAssetAsync(string assetBundleName, Action<ResourceInfo> cb)
+    {
+        yield return StartCoroutine(LoadResourceAsync(assetBundleName, (mainRes) =>
+        {
+           // 如果该资源未被使用过
+           if (!mainRes.Used)
+            {
+               // 获取真实的asset名称
+               string assetName = GetAssetName(assetBundleName);
+               // 加载asset镜像到内存
+               mainRes.mainObj = mainRes.assetBundle.LoadAsset(assetName);
+            }
 
-        if (cb != null)
-            cb(obj);
+           // 如果该资源已经被使用过，证明Asset镜像已加载在内存里
+           // 记录一下引用计数即可
+
+           // 引用 + 1
+           mainRes.RefCount++;
+        }));
+    }
+
+    // 异步加载资源内部
+    private IEnumerator LoadAsyncInternal(string assetBundleName, Action<UnityEngine.Object> cb)
+    {
+        yield return StartCoroutine(LoadAssetAsync(assetBundleName,
+            (resInfo) =>
+            {
+                if (cb != null)
+                    cb(resInfo.mainObj);
+            }));
+
+        //// 是否在缓存中
+        //if (loadedResources.ContainsKey(assetBundleName))
+        //{
+        //    if (cb != null)
+        //        cb(loadedResources[assetBundleName].mainObj);
+        //    yield break;
+        //}
+
+        //// 加载该AssetBundle所有依赖的资源
+        //WWW www;
+        //string[] dps = abMainfest.GetAllDependencies(assetBundleName);
+        //foreach (string dp in dps)
+        //{
+        //    string dpUrl = ResourceConfig.ABUrl + dp;
+        //    WWW dpwww = new WWW(dpUrl);
+        //    yield return dpwww;
+        //    if (dpwww.error != null)
+        //    {
+        //        Debug.Log(dpwww.error);
+        //        yield break;
+        //    }
+
+        //}
+
+        //// 加载主体
+        //string mainUrl = ResourceConfig.ABUrl + assetBundleName;
+        //www = new WWW(mainUrl);
+        //yield return www;
+        //if (www.error != null)
+        //{
+        //    Debug.LogError(www.error);
+        //    yield break;
+        //}
+
+        //AssetBundle ab = www.assetBundle;
+        //UnityEngine.Object obj = ab.LoadAsset("LoginUI");
+
+        //ResourceInfo resInfo = new ResourceInfo();
+        //resInfo.assetBundleName = assetBundleName;
+        ////resInfo.dependsAB = abs;
+        //resInfo.assetBundle = www.assetBundle;
+        //resInfo.mainObj = obj;
+
+        //// 加入缓存
+        //loadedResources.Add(assetBundleName, resInfo);
+
+        //if (cb != null)
+        //    cb(obj);
 
 
         //AssetBundleCreateRequest createRequest = AssetBundle.LoadFromFileAsync(path);
