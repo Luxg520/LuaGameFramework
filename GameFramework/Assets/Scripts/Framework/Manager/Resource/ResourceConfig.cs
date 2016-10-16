@@ -37,24 +37,6 @@ public class ResourceConfig
         }
     }
 
-    // AssetBundle 文件路径
-    public static string ABUrl
-    {
-        get
-        {
-            return "file://" + ABPath;
-        }
-    }
-
-    // AssetBundle Manifest 文件路径
-    public static string ABManifestUrl
-    {
-        get
-        {
-            return "file://" + ABManifestPath;
-        }
-    }
-
     // 获取指定UI的AB_Name
     public static string GetUIPath(string path)
     {

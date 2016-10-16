@@ -28,7 +28,7 @@ public class UIManager : ManagerBase<UIManager>
         else
         {
             // 加载UI
-            Instance.LoadUI(_type, (uiInfo) =>
+            Instance.LoadAsyncUI(_type, (uiInfo) =>
             {
                 ShowUI_Internal(uiInfo, _layer, _params);
             });
@@ -190,15 +190,27 @@ public class UIManager : ManagerBase<UIManager>
         // 回调
         if (cb != null)
             cb(uiInfo);
+    }
 
-        // 异步方法（未完善暂时不用）
-        //   .LoadAsync(uiPath, (obj) =>
-        //{
-        //    GameObject go = (GameObject)Instantiate(obj);
-        //    uiInfo.ui = go.GetComponent<UIBase>();
-        //    if (cb != null)
-        //        cb(uiInfo);
-        //});
+    // 异步加载UI
+    private void LoadAsyncUI(UIType _type, Action<UIInfo> cb)
+    {
+        // 加载UI资源并实例化GameObject
+        UIInfo uiInfo = m_UIDict[_type];
+        string uiPath = ResourceConfig.GetUIPath(uiInfo.path);
+        ResourceManager.Instance.LoadAsync(uiPath,(obj)=> 
+        {
+            GameObject go = (GameObject)Instantiate(obj);
+            uiInfo.ui = go.GetComponent<UIBase>();
+            uiInfo.ui.UIInfo = uiInfo;
+
+            // 缓存界面
+            m_LoadedUI.Add(_type, uiInfo);
+
+            // 回调
+            if (cb != null)
+                cb(uiInfo);
+        });
     }
 
     #endregion

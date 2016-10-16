@@ -104,6 +104,14 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
         return LoadInternal(path);
     }
 
+    // 同步加载资源内部函数
+    private UnityEngine.Object LoadInternal(string assetBundleName)
+    {
+        // 加载该资源
+        ResourceInfo mainRes = LoadAsset(assetBundleName);
+        return mainRes.mainObj;
+    }
+
     // 获取一个资源对象
     private ResourceInfo GetResource(string assetBundleName)
     {
@@ -169,14 +177,6 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
         return mainRes;
     }
 
-    // 同步加载资源内部函数
-    private UnityEngine.Object LoadInternal(string assetBundleName)
-    {
-        // 加载该资源
-        ResourceInfo mainRes = LoadAsset(assetBundleName);
-        return mainRes.mainObj;
-    }
-
     #endregion
 
     #region 异步加载
@@ -185,6 +185,16 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
     public void LoadAsync(string path, Action<UnityEngine.Object> cb)
     {
         StartCoroutine(LoadAsyncInternal(path, cb));
+    }
+
+    // 异步加载资源内部
+    private IEnumerator LoadAsyncInternal(string assetBundleName, Action<UnityEngine.Object> cb)
+    {
+        yield return StartCoroutine(LoadResourceAsync(assetBundleName,
+            (resInfo) =>
+            {
+                StartCoroutine(LoadAssetAsync(resInfo, cb));
+            }));
     }
 
     // 异步加载一个资源对象
@@ -209,7 +219,7 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
         List<ResourceInfo> depends = new List<ResourceInfo>();
         // 加载该AssetBundle所有依赖的资源
         string[] dps = abMainfest.GetAllDependencies(assetBundleName);
-        foreach(string dp in dps)
+        foreach (string dp in dps)
         {
             yield return StartCoroutine(LoadResourceAsync(dp, (dpRes) =>
             {
@@ -218,10 +228,10 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
         }
 
         // 从磁盘上加载主体AssetBundle到内存
-        string mainUrl = ResourceConfig.ABPath + assetBundleName;
+        string mainUrl = "file://" + ResourceConfig.ABPath + assetBundleName;
         WWW www = new WWW(mainUrl);
         yield return www;
-        if (www.error == null)
+        if (www.error != null)
         {
             Debug.LogError(www.error);
             yield break;
@@ -234,107 +244,37 @@ public class ResourceBundle : ManagerBase<ResourceBundle>
 
         // 缓存下来
         loadedResources.Add(assetBundleName, mainRes);
+
+        www.Dispose();
     }
 
     // 异步加载Asset
-    private IEnumerator LoadAssetAsync(string assetBundleName, Action<ResourceInfo> cb)
+    private IEnumerator LoadAssetAsync(ResourceInfo resInfo, Action<UnityEngine.Object> cb)
     {
-        yield return StartCoroutine(LoadResourceAsync(assetBundleName, (mainRes) =>
+        // 如果该资源未被使用过
+        if (!resInfo.Used)
         {
-           // 如果该资源未被使用过
-           if (!mainRes.Used)
+            // 获取真实的asset名称
+            string assetName = GetAssetName(resInfo.assetBundleName);
+            // 加载asset镜像到内存
+            AssetBundleRequest request = resInfo.assetBundle.LoadAssetAsync(assetName);
+
+            yield return request;
+
+            if (request.isDone)
             {
-               // 获取真实的asset名称
-               string assetName = GetAssetName(assetBundleName);
-               // 加载asset镜像到内存
-               mainRes.mainObj = mainRes.assetBundle.LoadAsset(assetName);
+                resInfo.mainObj = request.asset;
             }
+        }
 
-           // 如果该资源已经被使用过，证明Asset镜像已加载在内存里
-           // 记录一下引用计数即可
+        // 如果该资源已经被使用过，证明Asset镜像已加载在内存里
+        // 记录一下引用计数即可
+        // 引用 + 1
+        resInfo.RefCount++;
 
-           // 引用 + 1
-           mainRes.RefCount++;
-        }));
-    }
-
-    // 异步加载资源内部
-    private IEnumerator LoadAsyncInternal(string assetBundleName, Action<UnityEngine.Object> cb)
-    {
-        yield return StartCoroutine(LoadAssetAsync(assetBundleName,
-            (resInfo) =>
-            {
-                if (cb != null)
-                    cb(resInfo.mainObj);
-            }));
-
-        //// 是否在缓存中
-        //if (loadedResources.ContainsKey(assetBundleName))
-        //{
-        //    if (cb != null)
-        //        cb(loadedResources[assetBundleName].mainObj);
-        //    yield break;
-        //}
-
-        //// 加载该AssetBundle所有依赖的资源
-        //WWW www;
-        //string[] dps = abMainfest.GetAllDependencies(assetBundleName);
-        //foreach (string dp in dps)
-        //{
-        //    string dpUrl = ResourceConfig.ABUrl + dp;
-        //    WWW dpwww = new WWW(dpUrl);
-        //    yield return dpwww;
-        //    if (dpwww.error != null)
-        //    {
-        //        Debug.Log(dpwww.error);
-        //        yield break;
-        //    }
-
-        //}
-
-        //// 加载主体
-        //string mainUrl = ResourceConfig.ABUrl + assetBundleName;
-        //www = new WWW(mainUrl);
-        //yield return www;
-        //if (www.error != null)
-        //{
-        //    Debug.LogError(www.error);
-        //    yield break;
-        //}
-
-        //AssetBundle ab = www.assetBundle;
-        //UnityEngine.Object obj = ab.LoadAsset("LoginUI");
-
-        //ResourceInfo resInfo = new ResourceInfo();
-        //resInfo.assetBundleName = assetBundleName;
-        ////resInfo.dependsAB = abs;
-        //resInfo.assetBundle = www.assetBundle;
-        //resInfo.mainObj = obj;
-
-        //// 加入缓存
-        //loadedResources.Add(assetBundleName, resInfo);
-
-        //if (cb != null)
-        //    cb(obj);
-
-
-        //AssetBundleCreateRequest createRequest = AssetBundle.LoadFromFileAsync(path);
-        //yield return createRequest;
-        //AssetBundle assetBundle = createRequest.assetBundle;
-        //if (assetBundle == null)
-        //{
-        //    Debug.LogError("Failed to load AssetBundle");
-        //    yield break;
-        //}
-
-        //ResourceInfo resInfo = new ResourceInfo();
-        //resInfo.path = path;
-        //resInfo.assetBundle = assetBundle;
-
-        //AssetBundleRequest loadRequest = resInfo.assetBundle.LoadAssetAsync<GameObject>(path);
-        //yield return loadRequest;
-        //resInfo.mainObj = loadRequest.asset;
-
+        // 回调
+        if (cb != null)
+            cb(resInfo.mainObj);
 
     }
 
