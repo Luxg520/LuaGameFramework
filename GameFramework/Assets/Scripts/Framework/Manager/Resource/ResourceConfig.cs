@@ -8,13 +8,17 @@ public class ResourceConfig
     #region 资源路径
 
     // Assets路径
-    public const string AssetsPath = "Assets";
+    public const string AssetsPath = "Assets";    
     // 资源路径
     public static readonly string ResourcePath = AssetsPath + "/Bundles/";
     // UI资源路径
     public static readonly string UIPath = ResourcePath + "Prefabs/UI/";
     // 场景资源路径
     public static readonly string ScenePath = ResourcePath + "Scenes/";
+    // 配置表路径
+    public static readonly string ConfigPath = ResourcePath + "Config/";
+    // 版本路径
+    public static readonly string VersionPath = ConfigPath + "version.txt";
 
     #endregion
 
@@ -62,7 +66,7 @@ public class ResourceConfig
     {
         get 
         {
-            string url = "http://update.xxxx.com/ios/";
+            string url = "file://E:\\Update\\win\\";
             return url;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.IO;
 using System.Collections;
 using Swift;
 
@@ -21,7 +22,7 @@ public class GameCore : Core
     // 初始化
     public void Init()
     {
-        // 
+        
     }
 
 }
