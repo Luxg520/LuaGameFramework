@@ -37,12 +37,12 @@ public class GameLoader : MonoBehaviour
             yield return StartCoroutine(DownloadResource());
 
             // 4: 资源更新完毕，卸载Loader场景，进入游戏GameMain场景
-
+            // TODO
+            Debug.Log("进入游戏");
         }
 
     }
     
-
     // 获取最新版本信息
     IEnumerator GetNewVersionInfo()
     {
