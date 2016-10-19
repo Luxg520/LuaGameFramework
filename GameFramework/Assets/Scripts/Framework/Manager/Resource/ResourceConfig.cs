@@ -66,7 +66,7 @@ public class ResourceConfig
     {
         get 
         {
-            string url = "file://E:\\Update\\win\\";
+            string url = "file://C:\\MyFile\\Update\\win\\";
             return url;
         }
     }
@@ -76,7 +76,7 @@ public class ResourceConfig
     {
         get 
         {
-            return UpdateUrl + "Version.txt";
+            return UpdateUrl + "version.txt";
         }
     }
 

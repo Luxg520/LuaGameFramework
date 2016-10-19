@@ -122,13 +122,13 @@ public abstract class UIBase : MonoBehaviour
     /// <param name="_params">相关参数</param>
     protected static void ShowUI(UIType _type, UILayer _layer, params object[] _params)
     {
-        UIManager.ShowUI(_type, _layer, _params);
+        UIManager.Instance.ShowUI(_type, _layer, _params);
     }
 
     // 获取UI实例
     public static T GetInstance<T>() where T : UIBase
     {
-        return UIManager.GetUI<T>();
+        return UIManager.Instance.GetUI<T>();
     }
 
     // 切换UI状态
@@ -140,7 +140,7 @@ public abstract class UIBase : MonoBehaviour
     // 卸载该界面
     public void Release()
     {
-        UIManager.ReleaseUI(this.UIType);
+        UIManager.Instance.ReleaseUI(this.UIType);
     }
 
     #endregion

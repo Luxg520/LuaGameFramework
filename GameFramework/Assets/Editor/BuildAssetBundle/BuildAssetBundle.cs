@@ -28,12 +28,14 @@ public class BuildAssetBundle : Editor
         //Directory.CreateDirectory(ResourceConfig.BuildPath);
 
         // 不存在此文件夹的时候创建一下
-        if (!Directory.Exists(ResourceConfig.BuildPath))
-            Directory.CreateDirectory(ResourceConfig.BuildPath);
+        if (!Directory.Exists(ResourceConfig.ABPath))
+            Directory.CreateDirectory(ResourceConfig.ABPath);
 
         // （新版的打包工具会帮我们自动处理有变化的Bundle，没变化不会重新打包，加快的打包的时间）
         // 打包AssetBundle
-        BuildPipeline.BuildAssetBundles(ResourceConfig.BuildPath, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows);
+        BuildPipeline.BuildAssetBundles(ResourceConfig.ABPath, BuildAssetBundleOptions.UncompressedAssetBundle, BuildTarget.StandaloneWindows);
+
+        // 打包场景
 
         // 刷新一下
         AssetDatabase.Refresh();

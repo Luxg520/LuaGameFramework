@@ -8,15 +8,15 @@ using System.Collections.Generic;
 /// </summary>
 public class UIManager : ManagerBase<UIManager>
 {
-    #region 静态成员
+    #region 公共函数
 
     // 所有已注册UI
-    private static Dictionary<UIType, UIInfo> m_UIDict = new Dictionary<UIType, UIInfo>();
+    private Dictionary<UIType, UIInfo> m_UIDict = new Dictionary<UIType, UIInfo>();
     // 已加载UI
-    private static Dictionary<UIType, UIInfo> m_LoadedUI = new Dictionary<UIType, UIInfo>();
+    private Dictionary<UIType, UIInfo> m_LoadedUI = new Dictionary<UIType, UIInfo>();
 
     // 显示UI界面（采用异步方式）
-    public static void ShowUI(UIType _type, UILayer _layer, params object[] _params)
+    public void ShowUI(UIType _type, UILayer _layer, params object[] _params)
     {
         // UI 是否已注册
         if (!m_UIDict.ContainsKey(_type))
@@ -36,7 +36,7 @@ public class UIManager : ManagerBase<UIManager>
     }
 
     // 显示UI界面内部函数
-    private static void ShowUI_Internal(UIInfo uiInfo, UILayer _layer, params object[] _params)
+    private void ShowUI_Internal(UIInfo uiInfo, UILayer _layer, params object[] _params)
     {
         uiInfo.layer = _layer;
         UIBase ui = uiInfo.ui;
@@ -51,13 +51,13 @@ public class UIManager : ManagerBase<UIManager>
     }
 
     // 隐藏UI界面
-    public static UIBase HideUI(UIType _type, params object[] _params)
+    public UIBase HideUI(UIType _type, params object[] _params)
     {
         return null;
     }
 
     // 卸载UI界面
-    public static void ReleaseUI(UIType _type)
+    public void ReleaseUI(UIType _type)
     {
         // UI 是否已注册
         if (!m_UIDict.ContainsKey(_type))
@@ -73,7 +73,7 @@ public class UIManager : ManagerBase<UIManager>
     }
 
     // 获取UI实例
-    public static T GetUI<T>() where T : class
+    public T GetUI<T>() where T : class
     {
         foreach (var uiInfo in m_UIDict.Values)
         {
@@ -86,7 +86,7 @@ public class UIManager : ManagerBase<UIManager>
     }
 
     // 获取UI实例
-    public static UIBase GetUI(UIType _type)
+    public UIBase GetUI(UIType _type)
     {
         if (m_UIDict.ContainsKey(_type))
         {
@@ -96,13 +96,13 @@ public class UIManager : ManagerBase<UIManager>
     }
 
     // 获取UI资源路径
-    public static string GetUIPath(UIBase _ui)
+    public string GetUIPath(UIBase _ui)
     {
         return GetUIPath(_ui);
     }
 
     // 获取UI资源路径
-    public static string GetUIPath(UIType _type)
+    public string GetUIPath(UIType _type)
     {
         UIInfo uiInfo;
         if (!m_UIDict.TryGetValue(_type, out uiInfo))
@@ -112,7 +112,7 @@ public class UIManager : ManagerBase<UIManager>
 
     #endregion
 
-    #region 公共成员
+    #region UI层级
 
     // 游戏主UI层
     public Canvas GameUICanvas;
@@ -148,8 +148,14 @@ public class UIManager : ManagerBase<UIManager>
     public override void Init()
     {
         base.Init();
+
+        GameUICanvas = GameObject.Find("GameUICanvas").GetComponent<Canvas>();
+        PreposeUICanvas = GameObject.Find("PreposeUICanvas").GetComponent<Canvas>();
+        GuideUICanvas = GameObject.Find("GuideUICanvas").GetComponent<Canvas>();
+        TestUICanvas = GameObject.Find("TestUICanvas").GetComponent<Canvas>();
+
         InitUIs();
-    }    
+    }
 
     // 初始化UI
     private void InitUIs()

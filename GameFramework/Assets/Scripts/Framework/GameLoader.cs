@@ -7,10 +7,10 @@ using System.Collections;
 public class GameLoader : MonoBehaviour
 {
     // 最新版本号
-    public string newVersion;
+    private string newVersion;
 
     // 本地版本号
-    public string localVersion;
+    private string localVersion;
 
     private void Start()
     {
@@ -39,6 +39,8 @@ public class GameLoader : MonoBehaviour
             // 4: 资源更新完毕，卸载Loader场景，进入游戏GameMain场景
             // TODO
             Debug.Log("进入游戏");
+            ResourceBundle r = ResourceManager.Instance;
+            UnityEngine.SceneManagement.SceneManager.LoadScene("GameMain");
         }
 
     }

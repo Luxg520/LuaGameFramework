@@ -14,6 +14,20 @@ public abstract class ManagerBase<T> : MonoBehaviour where T : ManagerBase<T>
             {
                 instance = GameObject.FindObjectOfType<T>();
             }
+            if (instance == null)
+            {
+                GameObject root = GameObject.Find("ManagerRoot");
+                if (root == null)
+                {
+                    root = new GameObject("ManagerRoot");
+                    DontDestroyOnLoad(root);
+                }
+
+                GameObject go = new GameObject("_" + typeof(T).FullName);
+                instance = go.AddComponent<T>();
+                instance.transform.SetParent(root.transform);
+                instance.Init();
+            }
             return instance;
         }
     }
