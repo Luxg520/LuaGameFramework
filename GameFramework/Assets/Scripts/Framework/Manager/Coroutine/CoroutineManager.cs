@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 /// <summary>
 /// 协程管理器
@@ -21,5 +22,19 @@ public class CoroutineManager : ManagerBase<CoroutineManager>
     public void StopAll()
     {
         StopAllCoroutines();
+    }
+
+    // 延迟任务
+    public void DelayTask(float t, Action cb)
+    {
+        StartCoroutine(DelayTask_Internal(t, cb));
+    }
+
+    // 延迟任务内部
+    private IEnumerator DelayTask_Internal(float t, Action cb)
+    {
+        yield return new WaitForSeconds(t);
+        if (cb != null)
+            cb();
     }
 }

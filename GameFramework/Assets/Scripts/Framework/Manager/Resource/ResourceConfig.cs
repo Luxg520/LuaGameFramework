@@ -5,13 +5,18 @@ using System.Collections;
 /// </summary>
 public class ResourceConfig
 {
+    #region 资源路径
+
     // Assets路径
     public const string AssetsPath = "Assets";
     // 资源路径
     public static readonly string ResourcePath = AssetsPath + "/Bundles/";
     // UI资源路径
     public static readonly string UIPath = ResourcePath + "Prefabs/UI/";
+    // 场景资源路径
+    public static readonly string ScenePath = ResourcePath + "Scenes/";
 
+    #endregion
 
     #region AssetBundle相关
 
@@ -21,7 +26,13 @@ public class ResourceConfig
         get
         {
 #if UNITY_EDITOR
-            return BuildPath;
+            return Application.dataPath + "/../Build/AssetBundle/";
+#elif  UNITY_IPHONE
+            return null;
+#elif  UNITY_ANDROID
+            return null;
+#else 
+            return null;
 #endif
         }
     }
@@ -31,9 +42,7 @@ public class ResourceConfig
     {
         get
         {
-#if UNITY_EDITOR
             return ABPath + "AssetBundle";
-#endif
         }
     }
 
@@ -46,14 +55,27 @@ public class ResourceConfig
 
     #endregion
 
+    #region 更新相关
 
-    #region 打包相关路径
+    // 资源更新地址
+    public static string UpdateUrl
+    {
+        get 
+        {
+            string url = "http://update.xxxx.com/ios/";
+            return url;
+        }
+    }
 
-    // 打包路径
-    public static readonly string BuildPath = Application.dataPath + "/../Build/AssetBundle/";
+    // 资源版本地址
+    public static string ResVersionUrl
+    {
+        get 
+        {
+            return UpdateUrl + "Version.txt";
+        }
+    }
 
-    // 打包进度路径
-    public static readonly string BuildProgressPath = BuildPath + "/Progress.txt";
+    #endregion 
 
-    #endregion
 }

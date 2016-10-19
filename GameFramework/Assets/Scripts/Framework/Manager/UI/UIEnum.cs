@@ -4,6 +4,7 @@
 public enum UIType
 {
     LoginUI,    // 登录
+    LoadingUI,  // Loading
 }
 
 

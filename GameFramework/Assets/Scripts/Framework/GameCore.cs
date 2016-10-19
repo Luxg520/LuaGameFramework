@@ -21,7 +21,7 @@ public class GameCore : Core
     // 初始化
     public void Init()
     {
-
+        // 
     }
 
 }

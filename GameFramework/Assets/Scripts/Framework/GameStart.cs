@@ -6,49 +6,6 @@ using System.Collections.Generic;
 /// </summary>
 public class GameStart : MonoBehaviour
 {
-    ////  管理器集合
-    //private Dictionary<string, MonoBehaviour> ManagerDict = new Dictionary<string, MonoBehaviour>();
-
-    private void Start()
-    {        
-        InitManager();
-
-        GameCore.Instance.Init();
-
-        // 测试加载UI
-        LoginUI.ShowUI(1);
-    }
-
-    // 初始化管理器
-    private void InitManager()
-    {
-        ResourceManager.Instance.Init();
-
-        UIManager.Instance.Init();
-
-        // 资源管理器
-        //AddManager<ResourceManager>("ResourceManager");
-
-        //// 协程管理器
-        //AddManager<CoroutineManager>("CoroutineManager");
-
-        //// 音乐管理器
-        //AddManager<AudioManager>("AudioManager");
-
-        //// UI管理器
-        //AddManager<UIManager>("UIManager");
-    }
-
-    //// 添加一个管理器
-    //private T AddManager<T>(string name) where T : MonoBehaviour
-    //{
-    //    T mgr = FindObjectOfType<T>();
-    //    if (mgr == null)
-    //    {
-    //        GameObject go = new GameObject("_" + name);
-    //        go.transform.SetParent(ManagerRoot);
-    //        mgr = go.AddComponent<T>();
-    //    }
-    //    return mgr;
-    //}
+    // 启动游戏加载更新
+    
 }
