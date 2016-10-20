@@ -5,5 +5,27 @@ using System.Collections;
 /// </summary>
 public class SceneManager : ManagerBase<SceneManager>
 {
-            
+    // 加载场景
+    public void Load(string sceneName)
+    {
+        Application.LoadLevel(sceneName);
+    }
+
+    // 异步加载场景
+    public void LoadAsync(string sceneName)
+    {
+        Application.LoadLevelAsync(sceneName);
+    }
+
+    // 加载并附加场景
+    public void LoadAdditive(string sceneName)
+    {
+        Application.LoadLevelAdditive(sceneName);
+    }
+
+    // 异步加载并附加场景
+    public void LoadAsyncAdditive(string sceneName)
+    {
+        Application.LoadLevelAdditiveAsync(sceneName);
+    }
 }

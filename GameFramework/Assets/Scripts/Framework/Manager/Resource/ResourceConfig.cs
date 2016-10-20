@@ -19,6 +19,8 @@ public class ResourceConfig
     public static readonly string ConfigPath = ResourcePath + "Config/";
     // 版本路径
     public static readonly string VersionPath = ConfigPath + "version.txt";
+    // 临时路径
+    public static readonly string TempPath = AssetsPath + "/TempData/";
 
     #endregion
 
@@ -64,9 +66,13 @@ public class ResourceConfig
     // 资源更新地址
     public static string UpdateUrl
     {
-        get 
+        get
         {
+#if UNITY_5
             string url = "file://C:\\MyFile\\Update\\win\\";
+#else
+            string url = "file://E:\\Update\\win\\";
+#endif
             return url;
         }
     }
@@ -78,6 +84,12 @@ public class ResourceConfig
         {
             return UpdateUrl + "version.txt";
         }
+    }
+
+    // 获取资源信息地址
+    public static string GetABInfoUrl(string version)
+    {
+        return UpdateUrl + version + "\\ABInfo.txt";
     }
 
     #endregion 

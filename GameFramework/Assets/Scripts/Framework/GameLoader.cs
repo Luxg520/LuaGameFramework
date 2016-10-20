@@ -39,10 +39,14 @@ public class GameLoader : MonoBehaviour
             // 4: 资源更新完毕，卸载Loader场景，进入游戏GameMain场景
             // TODO
             Debug.Log("进入游戏");
-            ResourceBundle r = ResourceManager.Instance;
-            UnityEngine.SceneManagement.SceneManager.LoadScene("GameMain");
-        }
+            object resMgr = ResourceManager.Instance;
 
+#if UNITY_5
+            SceneManager.Instance.Load("GameMain");
+#else 
+            SceneManager.Instance.Load("GameMain_4");
+#endif
+        }
     }
     
     // 获取最新版本信息
@@ -73,7 +77,9 @@ public class GameLoader : MonoBehaviour
     // 下载差异资源
     IEnumerator DownloadResource()
     {
-        WWW www = new WWW(ResourceConfig.UpdateUrl + newVersion + "\\test.txt");
+        // 下载 ABInfo 文件进行增量更新
+        string abInfoUrl = ResourceConfig.GetABInfoUrl(newVersion);
+        WWW www = new WWW(abInfoUrl);
         yield return www;
         if (www.error != null)
         {

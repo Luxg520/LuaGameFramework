@@ -15,6 +15,10 @@ public class GameStartup : MonoBehaviour
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
         // 启动游戏加载更新
-        UnityEngine.SceneManagement.SceneManager.LoadScene("GameLoader");
+#if UNITY_5
+        SceneManager.Instance.Load("GameLoader");
+#else
+        SceneManager.Instance.Load("GameLoader_4");
+#endif
     }
 }

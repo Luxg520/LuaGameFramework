@@ -22,7 +22,8 @@ public class GameCore : Core
     // 初始化
     public void Init()
     {
-        
+        // 加载配置表
+        CsvMgr.Load();
     }
 
 }

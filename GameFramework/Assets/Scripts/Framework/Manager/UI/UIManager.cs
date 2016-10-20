@@ -149,12 +149,13 @@ public class UIManager : ManagerBase<UIManager>
     {
         base.Init();
 
+		InitUIs();
+
         GameUICanvas = GameObject.Find("GameUICanvas").GetComponent<Canvas>();
         PreposeUICanvas = GameObject.Find("PreposeUICanvas").GetComponent<Canvas>();
         GuideUICanvas = GameObject.Find("GuideUICanvas").GetComponent<Canvas>();
         TestUICanvas = GameObject.Find("TestUICanvas").GetComponent<Canvas>();
-
-        InitUIs();
+	
     }
 
     // 初始化UI
