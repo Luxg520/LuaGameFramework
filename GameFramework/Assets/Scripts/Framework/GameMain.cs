@@ -11,6 +11,6 @@ public class GameMain : MonoBehaviour {
         GameCore.Instance.Init();
 
         // 显示登录界面
-        LoginUI.ShowUI(1);
+        //LoginUI.ShowUI(1);
     }
 }
