@@ -7,7 +7,7 @@ using Swift;
 using UnityEditor;
 #endif
 
-public class CsvMgr
+public class CsvMgr : CsvMgr_Base
 {
     public static bool isLoaded = false;
     public static void Load()

@@ -29,7 +29,7 @@ public class CsvParser
         "version.txt",
     };
 
-    public static Dictionary<int, object> Items { get; private set; }
+    public static Dictionary<int, object> Items { get; private set; }    
 
     #endregion
 
