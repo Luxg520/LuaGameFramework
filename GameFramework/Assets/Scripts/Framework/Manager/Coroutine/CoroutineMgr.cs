@@ -4,7 +4,7 @@ using System.Collections;
 /// <summary>
 /// 协程管理器
 /// </summary>
-public class CoroutineManager : ManagerBase<CoroutineManager>
+public class CoroutineMgr : ManagerBase<CoroutineMgr>
 {
     // 开始协程
     public void StartCor(IEnumerator cor)

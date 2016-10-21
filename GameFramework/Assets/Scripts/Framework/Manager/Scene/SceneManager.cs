@@ -5,6 +5,15 @@ using System.Collections;
 /// </summary>
 public class SceneManager : ManagerBase<SceneManager>
 {
+    public Transform SceneRoot;
+
+    public override void Init()
+    {
+        base.Init();
+
+        SceneRoot = GameObject.Find("SceneRoot").transform;
+    }
+
     // 加载场景
     public void Load(string sceneName)
     {
@@ -28,4 +37,5 @@ public class SceneManager : ManagerBase<SceneManager>
     {
         Application.LoadLevelAdditiveAsync(sceneName);
     }
+
 }

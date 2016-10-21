@@ -590,6 +590,4 @@ public class CsvParser
     }
 
     #endregion
-
-
 }

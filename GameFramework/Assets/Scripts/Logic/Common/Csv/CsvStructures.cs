@@ -27,10 +27,10 @@ public class CsvStructures
 {
     public static object CreateByName(string name)
     {
-        switch (name)
-        {
+        //switch (name)
+        //{
 
-        }
+        //}
         return null;
     }
 }
