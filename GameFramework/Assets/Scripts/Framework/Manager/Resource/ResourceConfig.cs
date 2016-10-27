@@ -15,6 +15,8 @@ public class ResourceConfig
     public static readonly string UIPath = ResourcePath + "Prefabs/UI/";
     // 场景资源路径
     public static readonly string ScenePath = ResourcePath + "Scenes/";
+    // lua脚本路径
+    public static readonly string LuaPath = Application.dataPath + "/Scripts/Lua/";
     // 配置表路径
     public static readonly string ConfigPath = ResourcePath + "Config/";
     // 版本路径
