@@ -28,13 +28,9 @@ public class GameMain : MonoBehaviour
 
         // 执行游戏核心初始化函数
         LuaFunction initFunc = luaState.GetFunction("Init");
-
         initFunc.Call();
         initFunc.Dispose();
-        initFunc = null;
-
-        //// 初始化游戏核心组件
-        //GameCore.Instance.Init();        
+        initFunc = null; 
     }
 
     // 游戏退出

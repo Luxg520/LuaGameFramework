@@ -84,7 +84,7 @@ function Time:SetDeltaTime(deltaTime, unscaledDeltaTime)
 		_Time.realtimeSinceStartup = uTime.realtimeSinceStartup
 		_Time.frameCount = uTime.frameCount
 		counter = 1000000
-	else
+	else		
 		_Time.time = _Time.time + deltaTime
 		_Time.realtimeSinceStartup = _Time.realtimeSinceStartup + deltaTime
 		_Time.timeSinceLevelLoad = _Time.timeSinceLevelLoad + deltaTime	

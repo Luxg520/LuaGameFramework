@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using LuaInterface;
-
+using Swift;
 using BindType = ToLuaMenu.BindType;
 using System.Reflection;
 
@@ -51,7 +51,7 @@ public static class CustomSettings
         //-------------------------------------------------------------------        
                 
         _GT(typeof(Debugger)).SetNameSpace(null),        
-        _GT(typeof(LuaBehaviour)).SetNameSpace(null),
+        _GT(typeof(LuaBehaviour)),        
 
 #if USING_DOTWEENING
         _GT(typeof(DG.Tweening.DOTween)),
@@ -73,7 +73,7 @@ public static class CustomSettings
         //_GT(typeof(TrailRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),    
 #else
                                          
-        _GT(typeof(Component)),
+        _GT(typeof(UnityEngine.Component)),
         _GT(typeof(Transform)),
         _GT(typeof(Material)),
         _GT(typeof(Light)),
